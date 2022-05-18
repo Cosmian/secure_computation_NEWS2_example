@@ -66,4 +66,16 @@ encrypted_results = result_consumer.fetch_results(computation_uuid)
 from cosmian_secure_computation_client.crypto.helper import decrypt
 results = decrypt(encrypted_results, result_consumer_symmetric_key)
 
-print(int(results.decode("utf-8")))
+final_score = int(results.decode("utf-8"))
+
+if final_score <= 2:
+    final_score_as_string = "low risk"
+elif final_score <= 4:
+    final_score_as_string = "low-medium risk"
+elif final_score <= 6:
+    final_score_as_string = "medium risk"
+else:
+    final_score_as_string = "high risk"
+
+
+print(f"Patient score is {final_score} ({final_score_as_string})")
