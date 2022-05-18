@@ -3,9 +3,18 @@
 Compute the [National Early Warning Score](https://www.mdcalc.com/national-early-warning-score-news-2) in a [Cosmian Secure Computation](https://docs.cosmian.com/secure_computation/).
 
 There are 3 participants in this computation:
-- 🏢 the computation owner and code provider (the company with the private algorithm, for the example it's the public National Early Warning Score algorithm)
+- 🏢 the computation owner and code provider (the company with the private algorithm, for the example it's the public [National Early Warning Score](https://www.mdcalc.com/national-early-warning-score-news-2) algorithm)
 - 🤒 the data provider (the patient who sends his medical information encrypted)
 - 👩‍⚕️ the result consumer (the doctor who receives the final score and acts accordingly)
+
+[Cosmian Secure Computation](https://docs.cosmian.com/secure_computation/) guarantees that:
+- Cosmian cannot see the private company algorithm, the patient medical information or the final score
+- the private company cannot access the patient medical information
+- the private company cannot access the patient final score
+- the doctor cannot access the full medical information (only the final score)
+- the doctor cannot access the private company algorithm
+- the patient cannot access the private company algorithm
+- the patient cannot access his final score (this can be changed by allowing the patient to be in the result consumers list)
 
 ## Installation
 
