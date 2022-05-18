@@ -17,7 +17,7 @@ There are 3 participants in this computation:
 - the patient cannot access the private company algorithm
 - the patient cannot access his final score (this can be changed by allowing the patient to be in the result consumers list)
 
-|                        | Algoritm | Full Medical Informations | Final Medical Score |
+|                        | Algoritm | Full Medical Information | Final Medical Score |
 |------------------------|----------|---------------------------|---------------------|
 | Cosmian                | 🚫        | 🚫                         | 🚫                   |
 | Cloud Provider (Azure) | 🚫        | 🚫                         | 🚫                   |
