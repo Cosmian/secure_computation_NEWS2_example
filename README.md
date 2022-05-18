@@ -1,6 +1,6 @@
 # Secure Computation: National Early Warning Score
 
-Compute the [National Early Warning Score](https://www.mdcalc.com/national-early-warning-score-news-2) in a Cosmian secure enclave.
+Compute the [National Early Warning Score](https://www.mdcalc.com/national-early-warning-score-news-2) in a [Cosmian Secure Computation](https://docs.cosmian.com/secure_computation/).
 
 There is 3 participants in this computation:
 - 🏢 the computation owner and code provider (the company with the private algorithm, for the example it's the public National Early Warning Score algorithm)
