@@ -8,14 +8,10 @@ There are 3 participants in this computation:
 - 👩‍⚕️ the result consumer (the doctor who receives the final score and acts accordingly)
 
 [Cosmian Secure Computation](https://docs.cosmian.com/secure_computation/) guarantees that:
-- Cosmian cannot see the private company algorithm, the patient medical information or the final score
-- the cloud provider (currently Azure) cannot see the private company algorithm, the patient medical information or the final score
-- the private company cannot access the patient medical information
-- the private company cannot access the patient final score
-- the doctor cannot access the full medical information (only the final score)
-- the doctor cannot access the private company algorithm
-- the patient cannot access the private company algorithm
-- the patient cannot access his final score (this can be changed by allowing the patient to be in the result consumers list)
+- neither Cosmian nor the cloud provider can see the private company algorithm, the patient medical information, or the final score
+- the private company cannot access the patient medical information, nor the patient final score
+- the doctor cannot access the complete medical information (only the final score), nor the private company algorithm
+- the patient cannot access the private company algorithm, nor his final score (this can be changed by allowing the patient to be on the result consumers list)
 
 |                        | Algoritm | Full Medical Information | Final Medical Score |
 |------------------------|----------|---------------------------|---------------------|
