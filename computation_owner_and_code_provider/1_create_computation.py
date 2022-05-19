@@ -44,6 +44,6 @@ computation = code_provider.register(computation.uuid, code_provider_public_key)
 
 from cosmian_secure_computation_client.crypto.helper import random_symkey
 code_provider_symmetric_key = random_symkey()
-helpers.save_bytes_to_file("code_provider_symetric_key", code_provider_symmetric_key)
+helpers.save_bytes_to_file("/tmp/code_provider_symetric_key", code_provider_symmetric_key)
 
 code_provider.upload(computation.uuid, code_provider_symmetric_key, Path(os.path.dirname(__file__)) / "code")

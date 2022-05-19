@@ -41,7 +41,7 @@ computation_owner.approve_participants(computation.uuid, "My super secure signat
 ### Code Provider approves the computation
 
 from cosmian_secure_computation_client.crypto.helper import seal
-code_provider_symetric_key = helpers.read_bytes_from_file("code_provider_symetric_key")
+code_provider_symetric_key = helpers.read_bytes_from_file("/tmp/code_provider_symetric_key")
 code_provider_sealed_symmetric_key = seal(code_provider_symetric_key, computation.enclave.identity.public_key)
 
 code_provider.key_provisioning(computation.uuid, code_provider_sealed_symmetric_key)
