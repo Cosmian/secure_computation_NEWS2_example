@@ -1,19 +1,37 @@
-from cosmian_secure_computation_client import ComputationOwnerAPI, CodeProviderAPI
+from pathlib import Path
+from cosmian_secure_computation_client import CodeProviderAPI
+from cosmian_secure_computation_client.crypto.context import CryptoContext
+from cosmian_secure_computation_client.api.computations import EnclaveIdentityLockError
 import os
-import helpers
 import time
 
 cosmian_token = os.environ.get('COSMIAN_TOKEN')
-computation_owner = ComputationOwnerAPI(cosmian_token)
-code_provider = CodeProviderAPI(cosmian_token)
+
+
+
+
+### Read keys from files from first step
+
+words = Path("/tmp/words").read_text()
+code_provider_asymmetric_keys_seed = Path("/tmp/code_provider_asymmetric_keys_seed").read_bytes()
+code_provider_symmetric_key = Path("/tmp/code_provider_symmetric_key").read_bytes()
+
+code_provider = CodeProviderAPI(cosmian_token, CryptoContext(
+    words = words,
+    ed25519_seed = code_provider_asymmetric_keys_seed,
+    symkey = code_provider_symmetric_key,
+))
 
 computation_uuid = input("Computation UUID: ")
 
 while True:
-    computation = computation_owner.get_computation(computation_uuid)
+    computation = code_provider.get_computation(computation_uuid)
+
     if computation.enclave.identity is None:
         print("Waiting 5s the generation of the enclave identity…")
         time.sleep(5)
+    elif isinstance(computation.enclave.identity, EnclaveIdentityLockError):
+        raise Exception(f"The enclave cannot lock its identity because there is an error in the entrypoint.\n\n{computation.enclave.identity.stdout}\n\n{computation.enclave.identity.stderr}")
     else:
         break
 
@@ -26,23 +44,13 @@ manifest = computation.enclave.identity.manifest
 quote = computation.enclave.identity.quote
 
 print("\n\n")
-print(computation_owner.remote_attestation(quote))
+print(code_provider.remote_attestation(quote))
 print("\n\n")
-
-
-
-
-### Computation Owner approves the computation
-computation_owner.approve_participants(computation.uuid, "My super secure signature")
 
 
 
 
 ### Code Provider approves the computation
 
-from cosmian_secure_computation_client.crypto.helper import seal
-code_provider_symetric_key = helpers.read_bytes_from_file("/tmp/code_provider_symetric_key")
-code_provider_sealed_symmetric_key = seal(code_provider_symetric_key, computation.enclave.identity.public_key)
-
-code_provider.key_provisioning(computation.uuid, code_provider_sealed_symmetric_key)
+code_provider.key_provisioning(computation.uuid, computation.enclave.identity.public_key)
 

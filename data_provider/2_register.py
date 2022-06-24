@@ -1,12 +1,20 @@
+from pathlib import Path
 from cosmian_secure_computation_client import DataProviderAPI
+from cosmian_secure_computation_client.crypto.context import CryptoContext
 import os
-import helpers
 
 cosmian_token = os.environ.get('COSMIAN_TOKEN')
-data_provider = DataProviderAPI(cosmian_token)
+words = Path("/tmp/words").read_text()
+data_provider = DataProviderAPI(cosmian_token, CryptoContext(words=words))
 
 computation_uuid = input("Computation UUID: ")
 
-data_provider_public_key = helpers.generate_pgp_key("some_data_provider_email@example.org")
+computation = data_provider.register(computation_uuid)
 
-computation = data_provider.register(computation_uuid, data_provider_public_key)
+
+
+
+### Save keys for later
+
+Path("/tmp/data_provider_asymmetric_keys_seed").write_bytes(data_provider.ctx.ed25519_seed)
+Path("/tmp/data_provider_symmetric_key").write_bytes(data_provider.ctx.symkey)

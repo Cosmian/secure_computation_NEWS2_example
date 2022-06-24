@@ -1,9 +1,25 @@
+from pathlib import Path
 from cosmian_secure_computation_client import ResultConsumerAPI
+from cosmian_secure_computation_client.crypto.context import CryptoContext
 import os
 import time
 
 cosmian_token = os.environ.get('COSMIAN_TOKEN')
-result_consumer = ResultConsumerAPI(cosmian_token)
+
+
+
+
+### Read keys from files from first step
+
+words = Path("/tmp/words").read_text()
+result_consumer_asymmetric_keys_seed = Path("/tmp/result_consumer_asymmetric_keys_seed").read_bytes()
+result_consumer_symmetric_key = Path("/tmp/result_consumer_symmetric_key").read_bytes()
+
+result_consumer = ResultConsumerAPI(cosmian_token, CryptoContext(
+    words = words,
+    ed25519_seed = result_consumer_asymmetric_keys_seed,
+    symkey = result_consumer_symmetric_key,
+))
 
 computation_uuid = input("Computation UUID: ")
 computation = result_consumer.get_computation(computation_uuid)
@@ -27,13 +43,7 @@ print("\n\n")
 
 ### Result Consumer approves the computation
 
-from cosmian_secure_computation_client.crypto.helper import random_symkey
-result_consumer_symmetric_key = random_symkey()
-
-from cosmian_secure_computation_client.crypto.helper import seal
-result_consumer_sealed_symetric_key = seal(result_consumer_symmetric_key, computation.enclave.identity.public_key)
-
-result_consumer.key_provisioning(computation_uuid, result_consumer_sealed_symetric_key)
+result_consumer.key_provisioning(computation_uuid, computation.enclave.identity.public_key)
 
 
 
@@ -62,9 +72,7 @@ while True:
 ### Result Consumer decrypts the results
 
 encrypted_results = result_consumer.fetch_results(computation_uuid)
-
-from cosmian_secure_computation_client.crypto.helper import decrypt
-results = decrypt(encrypted_results, result_consumer_symmetric_key)
+results = result_consumer.ctx.decrypt(encrypted_results)
 
 final_score = int(results.decode("utf-8"))
 
