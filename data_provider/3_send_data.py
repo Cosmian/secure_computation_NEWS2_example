@@ -1,9 +1,25 @@
+from pathlib import Path
 from cosmian_secure_computation_client import DataProviderAPI
+from cosmian_secure_computation_client.crypto.context import CryptoContext
 import os
 import json
 
 cosmian_token = os.environ.get('COSMIAN_TOKEN')
-data_provider = DataProviderAPI(cosmian_token)
+
+
+
+
+### Read keys from files from first step
+
+words = Path("/tmp/words").read_text()
+data_provider_asymmetric_keys_seed = Path("/tmp/data_provider_asymmetric_keys_seed").read_bytes()
+data_provider_symmetric_key = Path("/tmp/data_provider_symmetric_key").read_bytes()
+
+data_provider = DataProviderAPI(cosmian_token, CryptoContext(
+    words = words,
+    ed25519_seed = data_provider_asymmetric_keys_seed,
+    symkey = data_provider_symmetric_key,
+))
 
 computation_uuid = input("Computation UUID: ")
 computation = data_provider.get_computation(computation_uuid)
@@ -51,10 +67,7 @@ data_as_json_string = json.dumps({
 
 ### Data Provider sends data
 
-from cosmian_secure_computation_client.crypto.helper import random_symkey
-data_provider_symmetric_key = random_symkey()
-
-data_provider.push_data(computation_uuid, data_provider_symmetric_key, "responses.json", bytes(data_as_json_string, "utf-8"))
+data_provider.push_data(computation_uuid, "responses.json", bytes(data_as_json_string, "utf-8"))
 data_provider.done(computation_uuid)
 
 
@@ -62,7 +75,4 @@ data_provider.done(computation_uuid)
 
 ### Data Provider approves the computation
 
-from cosmian_secure_computation_client.crypto.helper import seal
-data_provider_sealed_symetric_key = seal(data_provider_symmetric_key, computation.enclave.identity.public_key)
-
-data_provider.key_provisioning(computation_uuid, data_provider_sealed_symetric_key)
+data_provider.key_provisioning(computation_uuid, computation.enclave.identity.public_key)
